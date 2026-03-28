@@ -185,19 +185,6 @@ export default function GameBoard({ layoutIndex, onWin, onBack }: GameBoardProps
                 const x = tile.col * CELL_W + tile.layer * 3 + 16;
                 const y = tile.row * CELL_H - tile.layer * 3 + 16;
 
-                // Цвет группы тайлов
-                const groupColor: Record<string, string> = {
-                  winds:   '#4dc9ff',
-                  dragons: '#ff6bb5',
-                  bamboo:  '#39e88a',
-                  circles: '#ffd060',
-                  chars:   '#9b59ff',
-                };
-                const tileColor = groupColor[tile.group] || '#9b59ff';
-
-                // 3D: правая грань и нижняя грань
-                const DEPTH = isSelected ? 6 : 4;
-
                 return (
                   <div
                     key={tile.id}
@@ -205,96 +192,35 @@ export default function GameBoard({ layoutIndex, onWin, onBack }: GameBoardProps
                     className={`tile ${!isFree ? 'tile-blocked' : ''} ${isSelected ? 'tile-selected' : ''} ${isHint ? 'hint-flash' : ''}`}
                     style={{
                       position: 'absolute',
-                      left: x,
-                      top: y,
+                      left: x, top: y,
                       width: CELL_W - 4,
                       height: CELL_H - 4,
                       zIndex: tile.layer * 10 + (isSelected ? 100 : 0),
-                    }}
-                  >
-                    {/* Правая 3D-грань */}
-                    <div style={{
-                      position: 'absolute',
-                      right: -DEPTH,
-                      top: DEPTH / 2,
-                      width: DEPTH,
-                      height: '100%',
                       background: isSelected
-                        ? `linear-gradient(180deg, rgba(155,89,255,0.6), rgba(77,201,255,0.3))`
-                        : `linear-gradient(180deg, ${tileColor}55, ${tileColor}22)`,
-                      borderRadius: '0 4px 4px 0',
-                      transform: 'skewY(-2deg)',
-                    }} />
-                    {/* Нижняя 3D-грань */}
-                    <div style={{
-                      position: 'absolute',
-                      bottom: -DEPTH,
-                      left: DEPTH / 2,
-                      width: '100%',
-                      height: DEPTH,
-                      background: isSelected
-                        ? `linear-gradient(90deg, rgba(155,89,255,0.4), rgba(77,201,255,0.2))`
-                        : `linear-gradient(90deg, ${tileColor}33, ${tileColor}11)`,
-                      borderRadius: '0 0 4px 4px',
-                      transform: 'skewX(-2deg)',
-                    }} />
-                    {/* Основная поверхность тайла */}
-                    <div style={{
-                      position: 'absolute',
-                      inset: 0,
-                      borderRadius: 8,
-                      background: isSelected
-                        ? `linear-gradient(145deg, rgba(155,89,255,0.45) 0%, rgba(30,20,70,0.98) 60%, rgba(77,201,255,0.2) 100%)`
+                        ? 'linear-gradient(135deg, rgba(155,89,255,0.5) 0%, rgba(77,201,255,0.3) 100%)'
                         : isFree
-                          ? `linear-gradient(145deg, rgba(55,50,110,0.98) 0%, rgba(22,18,55,1) 60%, rgba(30,25,75,0.95) 100%)`
-                          : `linear-gradient(145deg, rgba(25,22,55,0.9) 0%, rgba(15,12,40,0.95) 100%)`,
+                          ? 'linear-gradient(135deg, rgba(40,40,80,0.95) 0%, rgba(25,25,60,0.98) 100%)'
+                          : 'linear-gradient(135deg, rgba(20,20,40,0.8) 0%, rgba(15,15,35,0.9) 100%)',
                       border: isSelected
-                        ? `1.5px solid ${tileColor}`
+                        ? '1.5px solid rgba(155,89,255,0.9)'
                         : isHint
-                          ? '1.5px solid rgba(255,208,96,0.95)'
+                          ? '1.5px solid rgba(255,208,96,0.9)'
                           : isFree
-                            ? `1px solid ${tileColor}55`
-                            : '1px solid rgba(80,80,130,0.25)',
-                      boxShadow: isSelected
-                        ? `0 8px 25px rgba(155,89,255,0.5), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 0 20px ${tileColor}22`
-                        : isFree
-                          ? `0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 12px ${tileColor}0a`
-                          : `0 1px 3px rgba(0,0,0,0.3)`,
+                            ? '1px solid rgba(155,89,255,0.35)'
+                            : '1px solid rgba(100,100,150,0.2)',
+                      borderRadius: 8,
                       display: 'flex',
-                      flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: 1,
-                      overflow: 'hidden',
-                    }}>
-                      {/* Блик сверху */}
-                      <div style={{
-                        position: 'absolute',
-                        top: 0, left: 0, right: 0,
-                        height: '40%',
-                        background: 'linear-gradient(180deg, rgba(255,255,255,0.07) 0%, transparent 100%)',
-                        borderRadius: '8px 8px 0 0',
-                        pointerEvents: 'none',
-                      }} />
-                      {/* Цветная точка группы */}
-                      <div style={{
-                        width: 5, height: 5,
-                        borderRadius: '50%',
-                        background: tileColor,
-                        opacity: isFree ? 0.8 : 0.3,
-                        boxShadow: isFree ? `0 0 6px ${tileColor}` : 'none',
-                        marginBottom: 1,
-                      }} />
-                      {/* Символ */}
-                      <div style={{
-                        fontSize: 20,
-                        lineHeight: 1,
-                        filter: isFree ? 'none' : 'brightness(0.5)',
-                        userSelect: 'none',
-                      }}>
-                        {tile.symbol}
-                      </div>
-                    </div>
+                      fontSize: 22,
+                      boxShadow: isSelected
+                        ? '0 6px 20px rgba(155,89,255,0.4), inset 0 0 15px rgba(155,89,255,0.1), 2px 2px 0 rgba(0,0,0,0.5)'
+                        : isFree
+                          ? '0 3px 10px rgba(0,0,0,0.4), 2px 2px 0 rgba(0,0,0,0.4), inset 0 0 8px rgba(155,89,255,0.05)'
+                          : '1px 1px 0 rgba(0,0,0,0.3)',
+                    }}
+                  >
+                    {tile.symbol}
                   </div>
                 );
           })}
