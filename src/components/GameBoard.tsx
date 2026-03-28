@@ -123,17 +123,12 @@ export default function GameBoard({ layoutIndex, onWin, onBack }: GameBoardProps
   const total = tiles.length;
   const progress = total > 0 ? ((total - remaining) / total) * 100 : 0;
 
-  // Group tiles by layer for rendering
-  const tilesByLayer = tiles.reduce((acc, tile) => {
-    if (!acc[tile.layer]) acc[tile.layer] = [];
-    acc[tile.layer].push(tile);
-    return acc;
-  }, {} as Record<number, TileType[]>);
+  const sortedTiles = [...tiles].sort((a, b) => a.layer - b.layer);
 
   const CELL_W = 52;
   const CELL_H = 60;
-  const maxRow = Math.max(...tiles.map(t => t.row)) + 1;
-  const maxCol = Math.max(...tiles.map(t => t.col)) + 1;
+  const maxRow = tiles.length > 0 ? Math.max(...tiles.map(t => t.row)) + 1 : 10;
+  const maxCol = tiles.length > 0 ? Math.max(...tiles.map(t => t.col)) + 1 : 12;
   const boardW = maxCol * CELL_W + 40;
   const boardH = maxRow * CELL_H + 40;
 
@@ -182,11 +177,7 @@ export default function GameBoard({ layoutIndex, onWin, onBack }: GameBoardProps
       {/* Board */}
       <div className="flex-1 flex items-center justify-center p-4 overflow-auto">
         <div style={{position:'relative', width: boardW, height: boardH, margin: '0 auto'}}>
-          {Object.entries(tilesByLayer)
-            .sort(([a], [b]) => Number(a) - Number(b))
-            .flatMap(([, layerTiles]) =>
-              layerTiles.map(tile => {
-                if (tile.matched) return null;
+          {sortedTiles.filter(t => !t.matched).map(tile => {
                 const isFree = isTileFree(tile, tiles);
                 const isSelected = tile.selected;
                 const isHint = hintTiles.includes(tile.id);
@@ -232,8 +223,7 @@ export default function GameBoard({ layoutIndex, onWin, onBack }: GameBoardProps
                     {tile.symbol}
                   </div>
                 );
-              })
-          )}
+          })}
         </div>
       </div>
 
